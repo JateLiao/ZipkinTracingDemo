@@ -17,11 +17,33 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <brave.version>4.0.6</brave.version>
+        <brave.version>5.4.1</brave.version>
         <zipkin-reporter.version>0.6.12</zipkin-reporter.version>
     </properties>
    
     <dependencies>
+        <!--SpringBoot-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>2.1.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>2.1.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>2.1.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>2.1.5.RELEASE</version>
+        </dependency>
+
         <dependency>
             <groupId>com.alibaba.apm</groupId>
             <artifactId>zipkinDubboApi</artifactId>
@@ -58,7 +80,32 @@
 
         <dependency>
             <groupId>io.zipkin.brave</groupId>
+            <artifactId>brave-apache-http-interceptors</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.brave</groupId>
+            <artifactId>brave-instrumentation-spring-webmvc</artifactId>
+            <!--<version>5.4.1</version>-->
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.brave</groupId>
             <artifactId>brave-spring-beans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.reporter2</groupId>
+            <artifactId>zipkin-sender-okhttp3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.brave</groupId>
+            <artifactId>brave-context-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.brave</groupId>
+            <artifactId>brave-instrumentation-spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.brave</groupId>
+            <artifactId>brave-instrumentation-spring-webmvc</artifactId>
         </dependency>
 
         <dependency>
@@ -113,12 +160,12 @@
         <dependency>
             <groupId>io.zipkin.brave</groupId>
             <artifactId>brave-spring-web-servlet-interceptor</artifactId>
-            <version>${brave.version}</version>
+            <version>3.7.0</version>
         </dependency>
         <dependency>
             <groupId>io.zipkin.brave</groupId>
             <artifactId>brave-spring-resttemplate-interceptors</artifactId>
-            <version>${brave.version}</version>
+            <version>3.7.0</version>
         </dependency>
     </dependencies>
     <build>

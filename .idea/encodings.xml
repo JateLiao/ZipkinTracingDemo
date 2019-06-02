@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dubboDemo" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dubboDemo/dubboApi" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dubboDemo/dubboConsume" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dubboDemo/dubboProvider" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dubboDemo/thirdDubboProvider" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dubboDemo/thirdDubboProviderAPI" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/springMvcDemo" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/springMvcDemo/webmvc25" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/springMvcDemo/webmvc3" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/springMvcDemo/webmvc4" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/springMvcDemo/webmvc4-boot" charset="UTF-8" />
+  </component>
+</project>

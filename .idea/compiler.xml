@@ -6,11 +6,17 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="brave-webmvc25-example" />
+        <module name="brave-webmvc3-example" />
+        <module name="brave-webmvc4-boot-example" />
+        <module name="brave-webmvc4-example" />
         <module name="thirdDubboProvider" />
         <module name="thirdDubboProviderAPI" />
         <module name="zipkinDubboApi" />
         <module name="zipkinDubboConsumer" />
         <module name="zipkinDubboProvider" />
+        <module name="zipkinManualDemo" />
+        <module name="zipkinSleuthDemo" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="8" />

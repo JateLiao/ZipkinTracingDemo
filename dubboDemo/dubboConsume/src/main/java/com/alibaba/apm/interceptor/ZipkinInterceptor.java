@@ -1,10 +1,8 @@
 package com.alibaba.apm.interceptor;
 
 import brave.Span;
-import com.alibaba.apm.CommonZipkinHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,37 +15,70 @@ import javax.servlet.http.HttpServletResponse;
  * @Author liao
  * @Createtine 2019/6/2 21:21
  */
-@Component("zipkinInterceptor")
-public class ZipkinInterceptor extends CommonZipkinHandler implements HandlerInterceptor {
-    @Autowired(
-            required = false
-    )
-    //HandlerParser handlerParser = new HandlerParser();
+public class ZipkinInterceptor extends AbstractZipkinInterceptor {
     
-    ZipkinInterceptor() {
-    }
+    ThreadLocal<Span> spanThreadLocal = new ThreadLocal<>();
     
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) {
-        //SpanCustomizer span = (SpanCustomizer)request.getAttribute(SpanCustomizer.class.getName());
-        //if (span != null) {
-        //    this.handlerParser.preHandle(request, o, span);
-        //}
-        
-        /****************************************************************************/
-        Span span = buildSpanFromTracing(request.getRequestURL().toString(), getTracing());
-        traceIdThreadLocal.set(String.valueOf(span.context().traceId()));
+        Span span = null;
+        try {
+            span = buildSpanFromTracing(request.getRequestURI().toString(), getTracing());
+            setSpanKind(span);
+            span.tag(TAG_KEY_PARAM, request.getParameterMap().toString());
+            span.tag(TAG_KEY_WHOLE_SPANNAME, request.getRequestURL().toString());
+            span.tag(TAG_KEY_SPANID, String.valueOf(span.context().spanId()));
+            span.tag(TAG_KEY_PARENTID, String.valueOf(span.context().parentId()));
+            if (o != null && o instanceof HandlerMethod) {
+                span.tag(TAG_KEY_METHOD, ((HandlerMethod)o).getMethod().getDeclaringClass().getName() + "/" + ((HandlerMethod)o).getMethod().getName());
+            }
+    
+    
+            Long parentId = span.context().parentId();
+            if (parentId == null || parentId == 0L) {
+                parentId = span.context().traceId();
+            }
+            traceIdThreadLocal.set(String.valueOf(span.context().traceId())); // traceId向后传递，这里的traceId将作为整个链路的起点，优先级最高
+            parentIdThreadLocal.set(String.valueOf(parentId)); // api接口优先级一般最高，在此设置
+            spanThreadLocal.set(span);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (span != null) {
+                span.tag("pre-handle-error", e.getMessage());
+            }
+        }
         
         return true;
     }
     
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+    
+    }
+    
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        //SpanCustomizer span = (SpanCustomizer)request.getAttribute(SpanCustomizer.class.getName());
-        //if (span != null) {
-        //    SpanCustomizingHandlerInterceptor.setHttpRouteAttribute(request);
-        //}
+        Span span = spanThreadLocal.get();
+        if (null == span) {
+            return;
+        }
         
-        /****************************************************************************/
-        
+        try {
+            // 从response解析返回值
+            ResponseWrapper wrapper = new ResponseWrapper(response);
+            wrapper.getOutputStream().flush();
+            String value = new String(wrapper.getBytes(), "UTF-8");
+            span.tag(TAG_KEY_RESULT, response.toString());
+            if (null != ex) {
+                span.tag("after-error", ex.getMessage());
+            }
+        } catch (Exception e) {
+            span.error(e);
+        } finally {
+            span.finish();
+            
+            // 线程变量清除
+            traceIdThreadLocal.remove();
+            parentIdThreadLocal.remove();
+        }
     }
     
     @Override

@@ -1,6 +1,7 @@
 package com.alibaba.apm.interceptor;
 
 import brave.Span;
+import com.alibaba.apm.utils.JsonUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -17,14 +18,24 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ZipkinInterceptor extends AbstractZipkinInterceptor {
     
-    ThreadLocal<Span> spanThreadLocal = new ThreadLocal<>();
+    private static ThreadLocal<Span> spanThreadLocal = new ThreadLocal<>();
+    private static ThreadLocal<String> responseValueThreadLocal = new ThreadLocal<>();
+    
+    /**
+     * 获取字段值： responseValueThreadLocal.
+     *
+     * @return 返回字段值： responseValueThreadLocal.
+     */
+    public static ThreadLocal<String> getResponseValueThreadLocal() {
+        return responseValueThreadLocal;
+    }
     
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) {
         Span span = null;
         try {
             span = buildSpanFromTracing(request.getRequestURI().toString(), getTracing());
             setSpanKind(span);
-            span.tag(TAG_KEY_PARAM, request.getParameterMap().toString());
+            span.tag(TAG_KEY_PARAM, JsonUtils.toJsonWithJackson(request.getParameterMap()));
             span.tag(TAG_KEY_WHOLE_SPANNAME, request.getRequestURL().toString());
             span.tag(TAG_KEY_SPANID, String.valueOf(span.context().spanId()));
             span.tag(TAG_KEY_PARENTID, String.valueOf(span.context().parentId()));
@@ -52,7 +63,6 @@ public class ZipkinInterceptor extends AbstractZipkinInterceptor {
     
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-    
     }
     
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
@@ -62,11 +72,8 @@ public class ZipkinInterceptor extends AbstractZipkinInterceptor {
         }
         
         try {
-            // 从response解析返回值
-            ResponseWrapper wrapper = new ResponseWrapper(response);
-            wrapper.getOutputStream().flush();
-            String value = new String(wrapper.getBytes(), "UTF-8");
-            span.tag(TAG_KEY_RESULT, response.toString());
+            String value = responseValueThreadLocal.get();
+            span.tag(TAG_KEY_RESULT, value);
             if (null != ex) {
                 span.tag("after-error", ex.getMessage());
             }
@@ -78,11 +85,14 @@ public class ZipkinInterceptor extends AbstractZipkinInterceptor {
             // 线程变量清除
             traceIdThreadLocal.remove();
             parentIdThreadLocal.remove();
+            spanThreadLocal.remove();
+            responseValueThreadLocal.remove();
         }
     }
     
     @Override
     protected void setSpanKind(Span span) {
         span.kind(Span.Kind.SERVER); // 针对SpringBoot应用，设置Kind为Server
+        span.tag(TAG_KEY_TYPE, String.valueOf(Span.Kind.SERVER));
     }
 }

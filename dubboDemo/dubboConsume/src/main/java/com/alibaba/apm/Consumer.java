@@ -25,7 +25,8 @@ public class Consumer {
     public static void main(String[] args) {
         SpringApplication.run(Consumer.class,
                 "--spring.application.name=consumer",
-                "--server.port=9000"
+                "--server.port=9000",
+                "--spring.aop.auto=true"
         );
         
         //System.setProperty("java.net.preferIPv4Stack", "true");

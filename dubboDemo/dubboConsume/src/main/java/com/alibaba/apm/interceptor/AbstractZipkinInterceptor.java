@@ -21,6 +21,12 @@ public abstract class AbstractZipkinInterceptor extends CommonZipkinHandler impl
     protected static final String localservice = "consumer";
     protected static final String endpoint = "http://tracing-analysis-dc-hz.aliyuncs.com/adapt_bfciltjavz@d33dad698d04891_bfciltjavz@53df7ad2afe8301/api/v2/spans";
     
+    
+    /**
+     * tracing构造相关
+     */
+    protected static volatile Reporter<zipkin2.Span> reporter;
+    
     @Override
     protected abstract void setSpanKind(Span span);
     
@@ -52,6 +58,7 @@ public abstract class AbstractZipkinInterceptor extends CommonZipkinHandler impl
     
     protected brave.Span buildSpanFromTracing(String spanName, Tracing tracing) {
         tracing.tracer().startScopedSpan(spanName);
-        return tracing.tracer().currentSpan();
+        //return tracing.tracer().currentSpan();
+        return tracing.tracer().newTrace();
     }
 }

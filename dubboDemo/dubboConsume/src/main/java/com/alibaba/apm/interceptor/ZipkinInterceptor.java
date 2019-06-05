@@ -34,6 +34,13 @@ public class ZipkinInterceptor extends AbstractZipkinInterceptor {
         Span span = null;
         try {
             span = buildSpanFromTracing(request.getRequestURI().toString(), getTracing());
+            System.out.println("【dubbo-filter】preHandle: " + span.context().traceId() + ", "
+                    + span.context().parentId() + ", "
+                    + span.context().spanId() + ", "
+                    + Thread.currentThread().getId() + ", "
+                    + this + ", "
+                    + span.hashCode());
+            
             setSpanKind(span);
             span.tag(TAG_KEY_PARAM, JsonUtils.toJsonWithJackson(request.getParameterMap()));
             span.tag(TAG_KEY_WHOLE_SPANNAME, request.getRequestURL().toString());

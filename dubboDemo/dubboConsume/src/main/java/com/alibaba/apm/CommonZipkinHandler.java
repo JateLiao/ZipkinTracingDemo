@@ -38,11 +38,6 @@ public abstract class CommonZipkinHandler {
     protected static volatile ThreadLocal<String> traceIdThreadLocal = new ThreadLocal<>();
     
     /**
-     * tracing构造相关
-     */
-    protected static volatile Reporter<Span> reporter;
-    
-    /**
      * abstract 设置Span Kind信息
      * @param span span
      */

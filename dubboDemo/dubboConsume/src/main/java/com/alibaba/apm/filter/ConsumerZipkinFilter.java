@@ -31,10 +31,16 @@ public class ConsumerZipkinFilter extends AbstractZipkinFilter {
         Result result = null;
         try {
             String currentTraceIdL = String.valueOf(span.context().traceId());
-            String traceIdInvoke = RpcContext.getContext().getAttachments().get(TRACE_ID_LONG_KEY);
+            String traceIdInvoke = traceIdThreadLocal.get(); // traceId优先从http api接口获取，因为优先级最高
+            if (StringUtils.isEmpty(traceIdInvoke)) {
+                traceIdInvoke = RpcContext.getContext().getAttachments().get(TRACE_ID_LONG_KEY);
+            } else {
+                RpcContext.getContext().getAttachments().put(TRACE_ID_LONG_KEY, traceIdInvoke); // 向后传递traceid
+                resetFieldValue(span.context(), SPAN_CONTEXT_TRACEID_FIELD_NAME, Long.parseLong(traceIdInvoke));  // 重置traceId
+            }
+    
             if (StringUtils.isEmpty(traceIdInvoke) || !traceIdInvoke.equals(currentTraceIdL)) { // 为空一般表示链路起点
-                //RpcContext.getContext().getAttachments().put(TRACE_ID_LONG_KEY, String.valueOf(span.context().traceId())); // 向后传递traceid
-                RpcContext.getContext().setAttachment(TRACE_ID_LONG_KEY, String.valueOf(span.context().traceId()));
+                RpcContext.getContext().getAttachments().put(TRACE_ID_LONG_KEY, String.valueOf(span.context().traceId())); // 向后传递traceid
             }
     
             String parentId = parentIdThreadLocal.get();
@@ -46,7 +52,7 @@ public class ConsumerZipkinFilter extends AbstractZipkinFilter {
     
             // parentID下传
             RpcContext.getContext().getAttachments().put(PARENT_ID_LONG_KEY, String.valueOf(span.context().spanId()));
-            
+    
             result = invoker.invoke(invocation);
         } catch (Exception e) {
             System.out.println("【dubbo-filter】过滤器处理出现异常!!!");

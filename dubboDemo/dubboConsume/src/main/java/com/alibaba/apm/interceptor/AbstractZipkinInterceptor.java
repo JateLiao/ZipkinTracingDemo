@@ -58,6 +58,12 @@ public abstract class AbstractZipkinInterceptor extends CommonZipkinHandler impl
     
     protected brave.Span buildSpanFromTracing(String spanName, Tracing tracing) {
         tracing.tracer().startScopedSpan(spanName);
+        return tracing.tracer().currentSpan();
+        //return tracing.tracer().newTrace();
+    }
+    
+    protected brave.Span buildNewTraceSpanFromTracing(String spanName, Tracing tracing) {
+        tracing.tracer().startScopedSpan(spanName);
         //return tracing.tracer().currentSpan();
         return tracing.tracer().newTrace();
     }

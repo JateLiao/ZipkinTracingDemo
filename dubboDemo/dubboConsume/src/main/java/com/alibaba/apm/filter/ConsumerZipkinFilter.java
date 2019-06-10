@@ -39,6 +39,7 @@ public class ConsumerZipkinFilter extends AbstractZipkinFilter {
                 resetFieldValue(span.context(), SPAN_CONTEXT_TRACEID_FIELD_NAME, Long.parseLong(traceIdInvoke));  // 重置traceId
             }
     
+            currentTraceIdL = String.valueOf(span.context().traceId());
             if (StringUtils.isEmpty(traceIdInvoke) || !traceIdInvoke.equals(currentTraceIdL)) { // 为空一般表示链路起点
                 RpcContext.getContext().getAttachments().put(TRACE_ID_LONG_KEY, String.valueOf(span.context().traceId())); // 向后传递traceid
             }
@@ -60,7 +61,8 @@ public class ConsumerZipkinFilter extends AbstractZipkinFilter {
             span.error(e);
         } finally {
             setTags(invocation, result, span);
-            span.finish();
+            //span.finish();
+            doSpanFinish(span);
         }
         
         return result;

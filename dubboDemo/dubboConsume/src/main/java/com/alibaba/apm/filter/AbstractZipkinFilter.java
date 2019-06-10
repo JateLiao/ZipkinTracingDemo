@@ -60,7 +60,7 @@ public abstract class AbstractZipkinFilter extends CommonZipkinHandler implement
     protected brave.Span buildSpanFromTracing(Invocation invocation) {
         Tracing tracing = getTracing();
         tracing.tracer().startScopedSpan(getScopeSpanName(invocation));
-        return tracing.tracer().currentSpan();
+        return tracing.tracer().currentSpan().start(System.currentTimeMillis());
     }
     
     @Override

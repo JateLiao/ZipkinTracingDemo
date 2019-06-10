@@ -1,6 +1,7 @@
 package com.alibaba.apm.interceptor;
 
 import brave.Span;
+import brave.propagation.TraceContext;
 import com.alibaba.apm.utils.JsonUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,6 +35,13 @@ public class ZipkinInterceptor extends AbstractZipkinInterceptor {
         Span span = null;
         try {
             span = buildSpanFromTracing(request.getRequestURI().toString(), getTracing());
+            if (span.context().parentId() != null) {
+                Span newSpan = buildNewTraceSpanFromTracing(request.getRequestURI().toString(), getTracing());
+                resetFieldValue(span.context(), SPAN_CONTEXT_TRACEID_FIELD_NAME, newSpan.context().traceId());
+                resetFieldValue(span.context(), SPAN_CONTEXT_PARENT_FIELD_NAME, 0L);
+            }
+            span.start(System.currentTimeMillis());
+            
             System.out.println("【dubbo-filter】preHandle: " + span.context().traceId() + ", "
                     + span.context().parentId() + ", "
                     + span.context().spanId() + ", "
@@ -51,10 +59,12 @@ public class ZipkinInterceptor extends AbstractZipkinInterceptor {
             }
     
     
-            Long parentId = span.context().parentId();
-            if (parentId == null || parentId == 0L) {
-                parentId = span.context().traceId();
-            }
+            //Long parentId = span.context().parentId();
+            //if (parentId == null || parentId == 0L) {
+            //    parentId = span.context().traceId();
+            //}
+            Long parentId = span.context().spanId();
+            
             traceIdThreadLocal.set(String.valueOf(span.context().traceId())); // traceId向后传递，这里的traceId将作为整个链路的起点，优先级最高
             parentIdThreadLocal.set(String.valueOf(parentId)); // api接口优先级一般最高，在此设置
             spanThreadLocal.set(span);
@@ -87,7 +97,8 @@ public class ZipkinInterceptor extends AbstractZipkinInterceptor {
         } catch (Exception e) {
             span.error(e);
         } finally {
-            span.finish();
+            //span.finish();
+            doSpanFinish(span);
             
             // 线程变量清除
             traceIdThreadLocal.remove();

@@ -5,6 +5,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author liaoshijie
@@ -26,6 +30,31 @@ public class ConsumerController {
     @RequestMapping("/getinfo")
     @ResponseBody
     public String getInfo(HttpServletRequest request, @RequestParam(value = "param") String param) {
-        return "controller for param: " + param + ", value: " + demoService.sayHello(param);
+        String val = "controller for param: " + param + ", value: " + demoService.sayHello(param) + ", " + System.currentTimeMillis();
+        
+        //Timer timer = new Timer("TestConsumerTimer", true);
+        //timer.scheduleAtFixedRate(new TimerTask() {
+        //    @Override
+        //    public void run() {
+        //        demoService.sayHello("consumer的timer测试入参--" + Thread.currentThread().getId());
+        //    }
+        //}, 0, 10);
+    
+        ExecutorService service = Executors.newFixedThreadPool(5);
+        for (int i = 0; i < 5; i++) {
+            service.execute(() -> {
+                demoService.sayHello("consumer的ExecutorService测试入参--" + Thread.currentThread().getId());
+            });
+        }
+        service.shutdown();
+        while (!service.isTerminated()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return val;
     }
 }

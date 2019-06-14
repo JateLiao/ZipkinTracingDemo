@@ -41,8 +41,8 @@ public abstract class CommonZipkinHandler {
     /**
      * 在异步，或者一个provider内多次调用外部服务，保证同一个线程内持有相同的parentId
      */
-    protected static volatile ThreadLocal<String> parentIdThreadLocal = new ThreadLocal<>();
-    protected static volatile ThreadLocal<String> traceIdThreadLocal = new ThreadLocal<>();
+    protected static volatile InheritableThreadLocal<String> parentIdThreadLocal = new InheritableThreadLocal<>();
+    protected static volatile InheritableThreadLocal<String> traceIdThreadLocal = new InheritableThreadLocal<>();
     
     protected static volatile Class realSpanClazz;
     //private static volatile Field finishedSpanHandlerField;

@@ -19,8 +19,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ZipkinInterceptor extends AbstractZipkinInterceptor {
     
-    private static ThreadLocal<Span> spanThreadLocal = new ThreadLocal<>();
-    private static ThreadLocal<String> responseValueThreadLocal = new ThreadLocal<>();
+    private static InheritableThreadLocal<Span> spanThreadLocal = new InheritableThreadLocal<>();
+    private static InheritableThreadLocal<String> responseValueThreadLocal = new InheritableThreadLocal<>();
     
     /**
      * 获取字段值： responseValueThreadLocal.
@@ -102,7 +102,7 @@ public class ZipkinInterceptor extends AbstractZipkinInterceptor {
             
             // 线程变量清除
             traceIdThreadLocal.remove();
-            parentIdThreadLocal.remove();
+            //parentIdThreadLocal.remove();
             spanThreadLocal.remove();
             responseValueThreadLocal.remove();
         }

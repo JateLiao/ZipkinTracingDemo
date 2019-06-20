@@ -28,6 +28,8 @@ public abstract class AbstractZipkinFilter extends CommonZipkinHandler implement
     protected static final String TRACE_ID_LONG_KEY = "zipkin-traceId-long";
     protected static final String PARENT_ID_LONG_KEY = "zipkin-parent-long";
     protected static final String localservice = "consumer";
+    protected static final String TAG_KEY_LOCALSERVICE = "localservice";
+    protected static final String TAG_KEY_WHOLE_SPANNAME = "whole_span";
     protected static final String endpoint = "http://tracing-analysis-dc-hz.aliyuncs.com/adapt_bfciltjavz@d33dad698d04891_bfciltjavz@53df7ad2afe8301/api/v2/spans";
     
     /**
@@ -123,16 +125,6 @@ public abstract class AbstractZipkinFilter extends CommonZipkinHandler implement
         } else {
             setSpanTag(span, TAG_KEY_RESULT, "null");
         }
-    }
-    
-    /**
-     * setSpanTag.
-     * @param span span
-     * @param key key
-     * @param value value
-     */
-    protected void setSpanTag(brave.Span span, String key, String value) {
-        span.tag(key, value);
     }
     
     /**

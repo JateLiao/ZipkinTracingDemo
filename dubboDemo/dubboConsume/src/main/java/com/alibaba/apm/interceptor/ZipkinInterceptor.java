@@ -1,7 +1,6 @@
 package com.alibaba.apm.interceptor;
 
 import brave.Span;
-import brave.propagation.TraceContext;
 import com.alibaba.apm.utils.JsonUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,7 +33,8 @@ public class ZipkinInterceptor extends AbstractZipkinInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) {
         Span span = null;
         try {
-            span = buildSpanFromTracing(request.getRequestURI().toString(), getTracing());
+            //span = buildSpanFromTracing(request.getRequestURI().toString(), getTracing());
+            span = buildSpanFromTracingAli(request.getRequestURI().toString(), getTracing());
             if (span.context().parentId() != null) {
                 Span newSpan = buildNewTraceSpanFromTracing(request.getRequestURI().toString(), getTracing());
                 resetFieldValue(span.context(), SPAN_CONTEXT_TRACEID_FIELD_NAME, newSpan.context().traceId());
@@ -50,10 +50,11 @@ public class ZipkinInterceptor extends AbstractZipkinInterceptor {
                     + span.hashCode());
             
             setSpanKind(span);
-            span.tag(TAG_KEY_PARAM, JsonUtils.toJsonWithJackson(request.getParameterMap()));
-            span.tag(TAG_KEY_WHOLE_SPANNAME, request.getRequestURL().toString());
-            span.tag(TAG_KEY_SPANID, String.valueOf(span.context().spanId()));
-            span.tag(TAG_KEY_PARENTID, String.valueOf(span.context().parentId()));
+            setSpanTag(span, TAG_KEY_PARAM, JsonUtils.toJsonWithJackson(request.getParameterMap()));
+            setSpanTag(span, TAG_KEY_WHOLE_URL, request.getRequestURL().toString());
+            setSpanTag(span, TAG_KEY_SPANID, String.valueOf(span.context().spanId()));
+            setSpanTag(span, TAG_KEY_PARENTID, String.valueOf(span.context().parentId()));
+            setSpanTag(span, TAG_KEY_THREADID, String.valueOf(Thread.currentThread().getId()));
             if (o != null && o instanceof HandlerMethod) {
                 span.tag(TAG_KEY_METHOD, ((HandlerMethod)o).getMethod().getDeclaringClass().getName() + "/" + ((HandlerMethod)o).getMethod().getName());
             }
@@ -90,9 +91,10 @@ public class ZipkinInterceptor extends AbstractZipkinInterceptor {
         
         try {
             String value = responseValueThreadLocal.get();
+            setSpanTag(span, TAG_KEY_RESULT, value);
             span.tag(TAG_KEY_RESULT, value);
             if (null != ex) {
-                span.tag("after-error", ex.getMessage());
+                setSpanTag(span, TAG_KEY_AFTER_ERROR, ex.getMessage());
             }
         } catch (Exception e) {
             span.error(e);
@@ -102,7 +104,7 @@ public class ZipkinInterceptor extends AbstractZipkinInterceptor {
             
             // 线程变量清除
             traceIdThreadLocal.remove();
-            //parentIdThreadLocal.remove();
+            parentIdThreadLocal.remove();
             spanThreadLocal.remove();
             responseValueThreadLocal.remove();
         }

@@ -38,34 +38,35 @@ public class ZipkinHandlerMethodAspect {
     
     @Around("pointCut()")
     public Object afterReturning(ProceedingJoinPoint pjp) throws Throwable {
-        Method method = null;
-        String methodName = pjp.getSignature().getName();
+        boolean isAopMethod = false;
         try {
+            Method method = null;
+            String methodName = pjp.getSignature().getName();
+        
             Method[] methods = pjp.getTarget().getClass().getDeclaredMethods();
-            for (Method mtd : methods                 ) {
+            for (Method mtd : methods) {
                 if (!mtd.getName().equals(methodName)) {
                     continue;
                 }
                 method = mtd;
                 break;
             }
+        
+            if (method != null) { // 只有方法名对应，并且具有PostMapping  GetMapping RequestMapping注解的方法才会被解析
+                PostMapping postMapping = method.getAnnotation(PostMapping.class);
+                GetMapping getMapping = method.getAnnotation(GetMapping.class);
+                RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
+            
+                if (null != postMapping || null != getMapping || null != requestMapping) {
+                    isAopMethod = true;
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        boolean isAopMethod = false;
-        if (method != null) {
-            PostMapping postMapping = method.getAnnotation(PostMapping.class);
-            GetMapping getMapping = method.getAnnotation(GetMapping.class);
-            RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
-            
-            if (null != postMapping || null != getMapping || null != requestMapping) {
-                isAopMethod = true;
-            }
-        }
-        
+    
         Object value = pjp.proceed();
-        
+    
         if (isAopMethod) { // 只有特定方法的返回值才被放入ThreadLocal，作为日志记录来源
             ZipkinInterceptor.getResponseValueThreadLocal().set(JsonUtils.toJsonWithJackson(value));
         }

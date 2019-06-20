@@ -18,6 +18,9 @@ import javax.servlet.http.HttpServletResponse;
  * @Createtime 2019/6/3 17:55
  */
 public abstract class AbstractZipkinInterceptor extends CommonZipkinHandler implements HandlerInterceptor {
+    protected static final String TAG_KEY_WHOLE_URL = "whole_url";
+    protected static final String TAG_KEY_PRE_ERROR = "pre-error";
+    protected static final String TAG_KEY_AFTER_ERROR = "after-error";
     protected static final String localservice = "consumer";
     protected static final String endpoint = "http://tracing-analysis-dc-hz.aliyuncs.com/adapt_bfciltjavz@d33dad698d04891_bfciltjavz@53df7ad2afe8301/api/v2/spans";
     
@@ -66,5 +69,11 @@ public abstract class AbstractZipkinInterceptor extends CommonZipkinHandler impl
         tracing.tracer().startScopedSpan(spanName);
         //return tracing.tracer().currentSpan();
         return tracing.tracer().newTrace();
+    }
+    
+    protected brave.Span buildSpanFromTracingAli(String spanName, Tracing tracing) {
+        Span rootSpan = tracing.tracer().newTrace();
+        tracing.tracer().withSpanInScope(rootSpan);
+        return tracing.tracer().currentSpan();
     }
 }

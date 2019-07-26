@@ -19,7 +19,6 @@
     </properties>
     <modules>
         <module>dubboDemo</module>
-        <module>springMvcDemo</module>
     </modules>
      <dependencyManagement>
     <dependencies>

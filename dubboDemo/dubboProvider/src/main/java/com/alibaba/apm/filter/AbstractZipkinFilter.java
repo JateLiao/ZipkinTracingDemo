@@ -1,10 +1,13 @@
 package com.alibaba.apm.filter;
 
 import brave.Tracing;
-import com.alibaba.dubbo.common.Constants;
-import com.alibaba.dubbo.common.extension.Activate;
-import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.rpc.*;
+//import com.alibaba.dubbo.common.Constants;
+//import com.alibaba.dubbo.common.extension.Activate;
+//import com.alibaba.dubbo.common.utils.StringUtils;
+//import com.alibaba.dubbo.rpc.*;
+import org.apache.dubbo.common.extension.Activate;
+import org.apache.dubbo.common.utils.StringUtils;
+import org.apache.dubbo.rpc.*;
 import zipkin2.Span;
 import zipkin2.reporter.AsyncReporter;
 import zipkin2.reporter.Reporter;

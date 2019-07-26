@@ -2,10 +2,12 @@ package com.alibaba.apm.filter;
 
 import brave.Tracing;
 import com.alibaba.apm.CommonZipkinHandler;
-import com.alibaba.dubbo.common.Constants;
-import com.alibaba.dubbo.common.extension.Activate;
+//import com.alibaba.dubbo.common.Constants;
+//import com.alibaba.dubbo.common.extension.Activate;
+//import com.alibaba.dubbo.common.utils.StringUtils;
+//import com.alibaba.dubbo.rpc.*;
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.rpc.*;
+import org.apache.dubbo.rpc.*;
 import zipkin2.Span;
 import zipkin2.reporter.AsyncReporter;
 import zipkin2.reporter.Reporter;
@@ -16,7 +18,7 @@ import zipkin2.reporter.okhttp3.OkHttpSender;
  * @description: ${TODO}
  * @Createtime 2019/5/2416:14
  */
-@Activate
+//@Activate
 public abstract class AbstractZipkinFilter extends CommonZipkinHandler implements Filter {
     
     /**

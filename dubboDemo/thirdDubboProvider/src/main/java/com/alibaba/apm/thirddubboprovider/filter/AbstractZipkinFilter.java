@@ -1,10 +1,13 @@
 package com.alibaba.apm.thirddubboprovider.filter;
 
 import brave.Tracing;
-import com.alibaba.dubbo.common.Constants;
-import com.alibaba.dubbo.common.extension.Activate;
-import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.rpc.*;
+//import com.alibaba.dubbo.common.Constants;
+//import com.alibaba.dubbo.common.extension.Activate;
+//import com.alibaba.dubbo.common.utils.StringUtils;
+//import com.alibaba.dubbo.rpc.*;
+import org.apache.dubbo.common.extension.Activate;
+import org.apache.dubbo.common.utils.StringUtils;
+import org.apache.dubbo.rpc.*;
 import zipkin2.Span;
 import zipkin2.reporter.AsyncReporter;
 import zipkin2.reporter.Reporter;
@@ -39,7 +42,7 @@ public abstract class AbstractZipkinFilter implements Filter {
     protected static final String TAG_KEY_PARENTID = "parentId";
     protected static final String TAG_KEY_WHOLE_SPANNAME = "whole_span";
     
-    protected static final String localservice = "third-provider";
+    protected static final String localservice = "commonLogService-provider";
     protected static final String endpoint = "http://tracing-analysis-dc-hz.aliyuncs.com/adapt_bfciltjavz@d33dad698d04891_bfciltjavz@53df7ad2afe8301/api/v2/spans";
     
     /**

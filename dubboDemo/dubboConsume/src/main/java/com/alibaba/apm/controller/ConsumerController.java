@@ -30,7 +30,10 @@ public class ConsumerController {
     @RequestMapping("/getinfo")
     @ResponseBody
     public String getInfo(HttpServletRequest request, @RequestParam(value = "param") String param) {
-        String val = "controller for param: " + param + ", value: " + demoService.sayHello(param) + ", " + System.currentTimeMillis();
+        String val = "";
+        for (int i = 0; i < 3; i++) {
+            val += "controller for param: " + param + ", value: " + demoService.sayHello(param) + ", " + System.currentTimeMillis();
+        }
         
         //Timer timer = new Timer("TestConsumerTimer", true);
         //timer.scheduleAtFixedRate(new TimerTask() {

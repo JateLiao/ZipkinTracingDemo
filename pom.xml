@@ -19,8 +19,6 @@
     </properties>
     <modules>
         <module>dubboDemo</module>
-        <module>manualDemo</module>
-        <module>sleuthDemo</module>
         <module>springMvcDemo</module>
     </modules>
      <dependencyManagement>

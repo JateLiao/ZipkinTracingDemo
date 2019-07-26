@@ -1,7 +1,8 @@
 package com.alibaba.apm.filter;
 
 import brave.Span;
-import com.alibaba.dubbo.common.utils.StringUtils;
+//import com.alibaba.dubbo.common.utils.StringUtils;
+import org.apache.dubbo.common.utils.StringUtils;
 import org.apache.dubbo.rpc.*;
 //import com.alibaba.dubbo.common.extension.Activate;
 //import com.alibaba.dubbo.common.utils.StringUtils;

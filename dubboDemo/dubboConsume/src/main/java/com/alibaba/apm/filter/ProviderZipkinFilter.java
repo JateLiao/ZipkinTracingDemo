@@ -1,8 +1,9 @@
 package com.alibaba.apm.filter;
 
 import brave.Span;
-import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.rpc.RpcResult;
+//import com.alibaba.dubbo.common.utils.StringUtils;
+//import com.alibaba.dubbo.rpc.RpcResult;
+import org.apache.dubbo.common.utils.StringUtils;
 import org.apache.dubbo.rpc.*;
 
 //import com.alibaba.dubbo.common.extension.Activate;
@@ -22,7 +23,7 @@ public class ProviderZipkinFilter extends AbstractZipkinFilter {
         System.out.println("【dubbo-filter】方法名: " + invocation.getMethodName());
         
         if (isEcho(invocation)) { // 过滤dubbo回声检测
-            return new RpcResult(invocation);
+            return new AsyncRpcResult(invocation);
         }
     
         // 构造span

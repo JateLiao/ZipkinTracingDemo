@@ -4,8 +4,9 @@ package com.alibaba.apm;
 
 
 import com.alibaba.apm.thirddubboprovider.service.ThirdDubboProvider;
-import com.alibaba.dubbo.config.annotation.Reference;
-import com.alibaba.dubbo.rpc.RpcContext;
+//import com.alibaba.dubbo.config.annotation.Reference;
+//import com.alibaba.dubbo.rpc.RpcContext;
+import org.apache.dubbo.rpc.RpcContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

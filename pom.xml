@@ -19,6 +19,8 @@
     </properties>
     <modules>
         <module>dubboDemo</module>
+        <module>zipkintrace</module>
+        <module>rocketMQDemo</module>
     </modules>
      <dependencyManagement>
     <dependencies>

@@ -1,6 +1,7 @@
 package com.alibaba.zipkinDemo.zipkintrace.zipkin.springbootinterceptor;
 
 import brave.Span;
+import com.alibaba.zipkinDemo.zipkintrace.statics.BeanStatics;
 import com.alibaba.zipkinDemo.zipkintrace.util.JsonUtils;
 import com.alibaba.zipkinDemo.zipkintrace.zipkin.LogHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,7 +128,7 @@ public class ZipkinInterceptor extends AbstractZipkinInterceptor {
      * @param traceIdString traceID
      */
     private void writeHttpLog(HttpServletRequest request, HttpServletResponse response, String traceIdString) {
-        logHelper.writeHttpLog(request, response, exceptionThreadLocal.get(), responseValueThreadLocal.get(), traceIdString);
+        BeanStatics.logHelper.writeHttpLog(request, response, exceptionThreadLocal.get(), responseValueThreadLocal.get(), traceIdString);
     }
     
     /**

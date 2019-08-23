@@ -16,25 +16,27 @@
   limitations under the License.
   -->
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context" xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
+       xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
        http://dubbo.apache.org/schema/dubbo http://dubbo.apache.org/schema/dubbo/dubbo.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- provider's application name, used for tracing dependency relationship -->
-    <dubbo:application name="demo-third-provider"/>
+    <dubbo:application name="demo-provider"/>
 
-    <!-- use multicast registry center to export service  -->
-    <!--<dubbo:registry address="multicast://224.5.6.7:1234"/>-->
+    <!-- use multicast registry center to export service -->
     <dubbo:registry address="zookeeper://10.0.1.13:2181"/>
 
     <!-- use dubbo protocol to export service on port 20880 -->
-    <dubbo:protocol name="dubbo" port="29980"/>
+    <dubbo:protocol name="dubbo" port="27880"/>
 
-    <!-- service implementation, as same as regular local bean-->
-    <bean id="thirdProvider" class="com.alibaba.apm.thirddubboprovider.service.impl.ThirdDubboProviderImpl"/>
-
+    <!-- service implementation, as same as regular local bean
+    <bean id="demoService" class="com.alibaba.apm.DemoServiceImpl"/>
+-->
     <!-- declare the service interface to be exported -->
-    <dubbo:service interface="com.alibaba.apm.thirddubboprovider.service.ThirdDubboProvider" ref="thirdProvider"/>
+    <dubbo:service interface="com.alibaba.apm.DemoService" ref="demoService"/>
+    <bean id="demoService" class="com.alibaba.apm.DemoServiceImpl"/>
+    <dubbo:reference id="demoThirdService" check="false" interface="com.alibaba.apm.thirddubboprovider.service.ThirdDubboProvider"/>
 
     <bean id="sender" class="zipkin2.reporter.beans.OkHttpSenderFactoryBean">
         <!-- 从https://tracing-analysis.console.aliyun.com/ 获取zipking的接入点(endpoint)
@@ -44,7 +46,7 @@
     </bean>
 
     <bean id="tracing" class="brave.spring.beans.TracingFactoryBean">
-        <property name="localServiceName" value="dubbo-third-provider"/>
+        <property name="localServiceName" value="double-provider"/>
         <property name="spanReporter">
             <bean class="zipkin2.reporter.beans.AsyncReporterFactoryBean">
                 <property name="sender" ref="sender"/>
@@ -70,18 +72,17 @@
     </bean>
     <bean id="zipkinConfig" class="com.alibaba.zipkinDemo.zipkintrace.config.ZipkinConfig">
         <property name="endpoint" value="http://tracing-analysis-dc-hz.aliyuncs.com/adapt_bfciltjavz@d33dad698d04891_bfciltjavz@53df7ad2afe8301/api/v2/spans"></property>
-        <property name="localService" value="third-provider"></property>
+        <property name="localService" value="provider"></property>
     </bean>
     <bean id="logHelper" class="com.alibaba.zipkinDemo.zipkintrace.zipkin.LogHelper">
         <!--<property name="aliLogConfig" ref="aliConfig"></property>-->
     </bean>
 
     <!--<bean id="httpTracing" class="brave.spring.beans.HttpTracingFactoryBean">-->
-        <!--<property name="tracing" ref="tracing"/>-->
+    <!--<property name="tracing" ref="tracing"/>-->
     <!--</bean>-->
 
-    <!--<dubbo:provider filter="tracing" />-->
-    <dubbo:provider filter="genericimpl" />
-    <dubbo:consumer filter="trace" />
-    <context:component-scan base-package="com.alibaba.apm.thirddubboprovider"></context:component-scan>
+    <dubbo:provider filter="genericimpl"/>
+    <dubbo:consumer filter="trace"/>
+    <context:component-scan base-package="com.alibaba.apm"></context:component-scan>
 </beans>

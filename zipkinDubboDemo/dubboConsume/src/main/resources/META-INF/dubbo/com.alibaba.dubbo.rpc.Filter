@@ -1,1 +1,0 @@
-dubboConsumerFilter=com.alibaba.apm.filter.ConsumerZipkinFilter

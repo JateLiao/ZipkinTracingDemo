@@ -2,6 +2,7 @@ package com.alibaba.zipkinDemo.zipkintrace.zipkin.dubbofilter;
 
 import brave.Tracing;
 import com.alibaba.zipkinDemo.zipkintrace.config.ZipkinConfig;
+import com.alibaba.zipkinDemo.zipkintrace.statics.BeanStatics;
 import com.alibaba.zipkinDemo.zipkintrace.util.JsonUtils;
 import com.alibaba.zipkinDemo.zipkintrace.zipkin.CommonZipkinHandler;
 import com.alibaba.zipkinDemo.zipkintrace.zipkin.LogHelper;
@@ -30,8 +31,8 @@ public abstract class AbstractZipkinFilter extends CommonZipkinHandler implement
     /**
      // * 配置属性
      // */
-    @Setter
-    private ZipkinConfig zipkinConfig;
+    //@Setter
+    //private ZipkinConfig zipkinConfig;
     
     /** 一堆常量 */
     protected static final String METHOD_ECHO = Constants.$ECHO; // dubbo回声检测的方法名
@@ -85,7 +86,7 @@ public abstract class AbstractZipkinFilter extends CommonZipkinHandler implement
         setSpanKind(span); // 设置span类型信息，用以区分consumer/provider
         setSpanTag(span, TAG_KEY_METHOD, invocation.getMethodName());
         setSpanTag(span, TAG_KEY_PARAM, JsonUtils.toJsonWithJacksonYMDHms(invocation.getArguments()));
-        setSpanTag(span, TAG_KEY_LOCALSERVICE, zipkinConfig.getLocalService());
+        setSpanTag(span, TAG_KEY_LOCALSERVICE, BeanStatics.zipkinConfig.getLocalService());
         setSpanTag(span, TAG_KEY_SPANID, String.valueOf(span.context().spanId()));
         setSpanTag(span, TAG_KEY_PARENTID, String.valueOf(span.context().parentId()));
         setSpanTag(span, TAG_KEY_THREADID, String.valueOf(Thread.currentThread().getId()));
@@ -117,13 +118,13 @@ public abstract class AbstractZipkinFilter extends CommonZipkinHandler implement
         if (reporter == null) {
             synchronized (Reporter.class) {
                 if (reporter == null) {
-                    OkHttpSender sender = OkHttpSender.newBuilder().endpoint(zipkinConfig.getEndpoint()).build(); // 构建数据发送对象
+                    OkHttpSender sender = OkHttpSender.newBuilder().endpoint(BeanStatics.zipkinConfig.getEndpoint()).build(); // 构建数据发送对象
                     reporter = AsyncReporter.builder(sender).build(); // 构建数据上报对象
                 }
             }
         }
         
-        return Tracing.newBuilder().localServiceName(zipkinConfig.getLocalService()).spanReporter(reporter).build();
+        return Tracing.newBuilder().localServiceName(BeanStatics.zipkinConfig.getLocalService()).spanReporter(reporter).build();
     }
     
     /**

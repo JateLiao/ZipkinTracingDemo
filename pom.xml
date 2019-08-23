@@ -18,7 +18,7 @@
         <log4j2_version>2.11.1</log4j2_version>
     </properties>
     <modules>
-        <module>dubboDemo</module>
+        <module>zipkinDubboDemo</module>
         <module>zipkintrace</module>
         <module>rocketMQDemo</module>
     </modules>

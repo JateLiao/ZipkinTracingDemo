@@ -2,12 +2,14 @@ package com.alibaba.zipkinDemo.zipkintrace.zipkin;
 
 import com.alibaba.zipkinDemo.zipkintrace.config.AliLogConfig;
 import com.alibaba.zipkinDemo.zipkintrace.config.LogType;
+import com.alibaba.zipkinDemo.zipkintrace.statics.BeanStatics;
 import com.alibaba.zipkinDemo.zipkintrace.util.JsonUtils;
 import com.aliyun.openservices.aliyun.log.producer.LogProducer;
 import com.aliyun.openservices.aliyun.log.producer.ProducerConfig;
 import com.aliyun.openservices.aliyun.log.producer.ProjectConfig;
 import com.aliyun.openservices.log.common.LogContent;
 import com.aliyun.openservices.log.common.LogItem;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -30,13 +32,23 @@ import java.util.*;
 @Component
 @Slf4j
 public class LogHelper implements InitializingBean {
-    @Autowired
-    private AliLogConfig aliLogConfig;
+    //@Autowired
+    //@Setter
+    //private AliLogConfig aliLogConfig;
     
     private volatile LogProducer logProducer;
     
     @Override
     public void afterPropertiesSet() throws Exception {
+        if (null == BeanStatics.aliLogConfig) {
+            BeanStatics.aliLogConfig = new AliLogConfig();
+        }
+        BeanStatics.aliLogConfig.setAccessKeyId("LTAIeQDEnU1gAUBN");
+        BeanStatics.aliLogConfig.setAccessKeySecret("9AWhb04dn3XsHowj7983OgEoEC0QFU");
+        BeanStatics.aliLogConfig.setLogEndpoint("https://cn-hangzhou.log.aliyuncs.com");
+        BeanStatics.aliLogConfig.setLogProject("jojoread-test");
+        BeanStatics.aliLogConfig.setServerLogstore("jojoread-logstore-server-test");
+        
         // 初始化LogProducer
         ProducerConfig producerConfig = new ProducerConfig();
         producerConfig.setBatchSizeThresholdInBytes(10 * 1024 * 1024);
@@ -44,8 +56,9 @@ public class LogHelper implements InitializingBean {
         //producerConfig.setIoThreadCount(ioThreadCount);
         //producerConfig.setTotalSizeInBytes(totalSizeInBytes);
         logProducer = new LogProducer(producerConfig);
-        logProducer.putProjectConfig(new ProjectConfig(aliLogConfig.getLogProject(),
-                aliLogConfig.getLogEndpoint(), aliLogConfig.getAccessKeyId(), aliLogConfig.getAccessKeySecret()));
+        logProducer.putProjectConfig(new ProjectConfig(BeanStatics.aliLogConfig.getLogProject(),
+                BeanStatics.aliLogConfig.getLogEndpoint(), BeanStatics.aliLogConfig.getAccessKeyId(),
+                BeanStatics.aliLogConfig.getAccessKeySecret()));
     }
     
     /**
@@ -98,7 +111,7 @@ public class LogHelper implements InitializingBean {
                 ArrayList<LogContent> contents = new ArrayList<>(map.size());
                 map.entrySet().stream().forEach(entry -> contents.add(new LogContent(entry.getKey(), entry.getValue())));
                 logItem.SetLogContents(contents);
-                logProducer.send(aliLogConfig.getLogProject(), aliLogConfig.getServerLogstore(), logItem);
+                logProducer.send(BeanStatics.aliLogConfig.getLogProject(), BeanStatics.aliLogConfig.getServerLogstore(), logItem);
             }
         } catch (Exception e) {
             log.error("[Zipkin]记录http请求日志异常", e);
@@ -133,7 +146,7 @@ public class LogHelper implements InitializingBean {
             ArrayList<LogContent> contents = new ArrayList<>(logMap.size());
             logMap.entrySet().stream().forEach(entry -> contents.add(new LogContent(entry.getKey(), entry.getValue())));
             logItem.SetLogContents(contents);
-            logProducer.send(aliLogConfig.getLogProject(), aliLogConfig.getServerLogstore(), logItem);
+            logProducer.send(BeanStatics.aliLogConfig.getLogProject(), BeanStatics.aliLogConfig.getServerLogstore(), logItem);
         } catch (Exception e) {
             log.error("[Zipkin]记录WebService调用日志异常", e);
         }

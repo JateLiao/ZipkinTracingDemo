@@ -3,6 +3,7 @@ package com.alibaba.zipkinDemo.zipkintrace.zipkin.springbootinterceptor;
 import brave.Span;
 import brave.Tracing;
 import com.alibaba.zipkinDemo.zipkintrace.config.ZipkinConfig;
+import com.alibaba.zipkinDemo.zipkintrace.statics.BeanStatics;
 import com.alibaba.zipkinDemo.zipkintrace.zipkin.CommonZipkinHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,13 +65,13 @@ public abstract class AbstractZipkinInterceptor extends CommonZipkinHandler impl
         if (reporter == null) {
             synchronized (Reporter.class) {
                 if (reporter == null) {
-                    OkHttpSender sender = OkHttpSender.newBuilder().endpoint(zipkinConfig.getEndpoint()).build(); // 构建数据发送对象
+                    OkHttpSender sender = OkHttpSender.newBuilder().endpoint(BeanStatics.zipkinConfig.getEndpoint()).build(); // 构建数据发送对象
                     reporter = AsyncReporter.builder(sender).build(); // 构建数据上报对象
                 }
             }
         }
         
-        return Tracing.newBuilder().localServiceName(zipkinConfig.getLocalService() + "-api").spanReporter(reporter).build();
+        return Tracing.newBuilder().localServiceName(BeanStatics.zipkinConfig.getLocalService() + "-api").spanReporter(reporter).build();
     }
     
     protected brave.Span buildSpanFromTracing(String spanName, Tracing tracing, boolean isNewTrace) {

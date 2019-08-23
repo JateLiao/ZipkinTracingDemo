@@ -1,0 +1,2 @@
+dubboConsumerFilter=com.alibaba.zipkinDemo.zipkintrace.zipkin.dubbofilter.ConsumerZipkinFilter
+dubboProviderFilter=com.alibaba.zipkinDemo.zipkintrace.zipkin.dubbofilter.ProviderZipkinFilter

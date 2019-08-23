@@ -1,0 +1,2 @@
+genericimpl=com.alibaba.zipkinDemo.zipkintrace.zipkin.dubbofilter.ProviderZipkinFilter
+trace=com.alibaba.zipkinDemo.zipkintrace.zipkin.dubbofilter.ConsumerZipkinFilter

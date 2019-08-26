@@ -26,7 +26,7 @@ public class DemoServiceImpl implements DemoService {
     public String sayHello(String name) {
         
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 10; i++) {
             builder.append(thirdDubboProvider.responseHello(name)).append(", ");
         }
         ExecutorService service = Executors.newFixedThreadPool(5);

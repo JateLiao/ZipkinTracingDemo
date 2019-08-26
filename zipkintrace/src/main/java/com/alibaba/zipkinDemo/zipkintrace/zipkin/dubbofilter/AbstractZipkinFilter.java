@@ -1,12 +1,9 @@
 package com.alibaba.zipkinDemo.zipkintrace.zipkin.dubbofilter;
 
 import brave.Tracing;
-import com.alibaba.zipkinDemo.zipkintrace.config.ZipkinConfig;
 import com.alibaba.zipkinDemo.zipkintrace.statics.BeanStatics;
 import com.alibaba.zipkinDemo.zipkintrace.util.JsonUtils;
 import com.alibaba.zipkinDemo.zipkintrace.zipkin.CommonZipkinHandler;
-import com.alibaba.zipkinDemo.zipkintrace.zipkin.LogHelper;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.rpc.*;
@@ -158,11 +155,12 @@ public abstract class AbstractZipkinFilter extends CommonZipkinHandler implement
      * @param invocation invoke
      * @param result res
      * @param type type
+     * @param traceId traceId
      */
-    protected void writeDubboLog(Invocation invocation, Result result, String type) {
+    protected void writeDubboLog(Invocation invocation, Result result, String type, String traceId) {
         try {
-            LogHelper logHelper = applicationContext.getBean(LogHelper.class);
-            logHelper.writeWebServiceLog(invocation, result, type);
+            //LogHelper logHelper = applicationContext.getBean(LogHelper.class);
+            BeanStatics.logHelper.writeWebServiceLog(invocation, result, type, traceId);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

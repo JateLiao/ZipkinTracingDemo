@@ -9,14 +9,12 @@ import com.aliyun.openservices.aliyun.log.producer.ProducerConfig;
 import com.aliyun.openservices.aliyun.log.producer.ProjectConfig;
 import com.aliyun.openservices.log.common.LogContent;
 import com.aliyun.openservices.log.common.LogItem;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.dubbo.rpc.Invocation;
 import org.apache.dubbo.rpc.Result;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -121,11 +119,11 @@ public class LogHelper implements InitializingBean {
     /**
      * 记录WebService求日志
      */
-    public void writeWebServiceLog(Invocation invocation, Result result, String type) {
+    public void writeWebServiceLog(Invocation invocation, Result result, String type, String traceId) {
         try {
             Map<String, String> logMap = new HashMap<>();
             logMap.put("LogType", LogType.DUBBO.name());
-            logMap.put("TraceID", CommonZipkinHandler.traceIdThreadLocal.get());
+            logMap.put("TraceID", traceId);
             logMap.put("InterfaceName", invocation.getInvoker().getInterface().getName());
             logMap.put("Method", invocation.getMethodName());
             logMap.put("RequestBody", JsonUtils.toJsonWithJacksonYMDHms(invocation.getArguments()));
@@ -139,7 +137,7 @@ public class LogHelper implements InitializingBean {
             logMap.put("LogTime", DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss.SSS"));
             logMap.put("LogTimeL", String.valueOf(date.getTime()));
             
-            String spanName = invocation.getInvoker().getInterface().getName() + "/" + invocation.getMethodName();
+            String spanName = invocation.getInvoker().getInterface().getName() + "#" + invocation.getMethodName();
             logMap.put("WholeMethod", spanName);
             
             LogItem logItem = new LogItem();

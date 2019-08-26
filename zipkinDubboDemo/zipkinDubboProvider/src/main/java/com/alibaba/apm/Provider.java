@@ -16,6 +16,9 @@ public class Provider {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("META-INF/spring/dubbo-demo-provider.xml");
         context.start();
     
+        DemoServiceImpl demoService = context.getBean(DemoServiceImpl.class);
+        demoService.sayHello("arteon");
+        
         System.in.read(); // 按任意键退出
         System.out.println();
     }

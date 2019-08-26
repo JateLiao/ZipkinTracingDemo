@@ -75,7 +75,7 @@ public class ConsumerZipkinFilter extends AbstractZipkinFilter {
             span.error(e);
         } finally {
             // 日志上报
-            writeDubboLog(invocation, result, Span.Kind.CONSUMER.name());
+            writeDubboLog(invocation, result, Span.Kind.CONSUMER.name(), span.context().traceIdString());
             
             setTags(invocation, result, span);   //span.finish();
             doSpanFinish(span);

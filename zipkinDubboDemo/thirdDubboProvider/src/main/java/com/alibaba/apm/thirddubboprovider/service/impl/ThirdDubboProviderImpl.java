@@ -10,6 +10,12 @@ import com.alibaba.apm.thirddubboprovider.service.ThirdDubboProvider;
 public class ThirdDubboProviderImpl implements ThirdDubboProvider {
     
     public String responseHello(String param) {
+        String xx = getNull();
+        xx.equals("xx");
         return "第三方provider响应for param: " + param;
+    }
+    
+    private String getNull() {
+        return null;
     }
 }
